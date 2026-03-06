@@ -1,0 +1,9 @@
+{
+  "build": [
+    "echo 'Starting custom build process...'",
+    "npm install",
+    "npm run build",
+    "echo 'Deploying to public_html...'",
+    "cp -rf dist/* ../public_html/"
+  ]
+}
