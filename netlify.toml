@@ -1,0 +1,22 @@
+[build]
+  # Tell Netlify where the build command should run from
+  base = "frontend"
+  
+  # Command to install root dependencies (like concurrently) and then build frontend
+  command = "npm run build"
+  
+  # The static site output
+  publish = "dist"
+
+[functions]
+  # Netlify will look for functions to deploy here
+  directory = "backend/src"
+  node_bundler = "esbuild"
+
+# This section ensures that your React routes (like /admin or /products) 
+# work correctly and don't show a 404 error on refresh
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
