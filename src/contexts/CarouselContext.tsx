@@ -25,7 +25,7 @@ const DEFAULT_SLIDES: CarouselSlide[] = [
     title: 'Premium Corporate Gifts',
     subtitle: 'Thoughtfully Curated',
     description: 'Make Every Occasion Special',
-    image: 'https://images.pexels.com/photos/5650026/pexels-photo-5650026.jpeg?auto=compress&cs=tinysrgb&w=1920',
+    image: '/carousel/corporate-gifts-hero.png',
     cta: 'Shop Now',
   },
   {

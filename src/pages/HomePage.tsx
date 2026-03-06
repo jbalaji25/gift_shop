@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight, TrendingUp, Award, Truck, Shield } from 'lucide-react';
+import { useContent } from '../contexts/ContentContext';
 import { supabase, isMock } from '../lib/supabase';
 import { mockProducts } from '../lib/demoData';
 import type { Product } from '../lib/database.types';
@@ -10,14 +11,8 @@ interface HomePageProps {
   onNavigate: (page: string, productId?: string) => void;
 }
 
-const categories: { name: string; image: string; count: number }[] = [
-  { name: 'Luxury Gifts', image: 'https://images.pexels.com/photos/贈り物5650026/pexels-photo-5650026.jpeg?auto=compress&cs=tinysrgb&w=600', count: 150 },
-  { name: 'Corporate Gifts', image: 'https://images.pexels.com/photos/贈り物贈り物6348130/pexels-photo-6348130.jpeg?auto=compress&cs=tinysrgb&w=600', count: 120 },
-  { name: 'Festive Collection', image: 'https://images.pexels.com/photos/贈り物1666070/pexels-photo-1666070.jpeg?auto=compress&cs=tinysrgb&w=600', count: 80 },
-  { name: 'Personalized Gifts', image: 'https://images.pexels.com/photos/贈り物6348117/pexels-photo-6348117.jpeg?auto=compress&cs=tinysrgb&w=600', count: 95 },
-];
-
 export function HomePage({ onNavigate }: HomePageProps) {
+  const { content } = useContent();
   const { slides: heroSlides } = useCarousel();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -119,18 +114,17 @@ export function HomePage({ onNavigate }: HomePageProps) {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { icon: Truck, title: 'Free Delivery', desc: 'On orders above ₹50,000' },
-              { icon: Shield, title: 'Warranty', desc: 'Up to 10 years warranty' },
-              { icon: Award, title: 'Premium Quality', desc: '100% genuine premium materials' },
-              { icon: TrendingUp, title: 'Best Prices', desc: 'Biggest store, biggest savings' },
-            ].map((feature, index) => (
-              <div key={index} className="text-center space-y-3 group">
-                <feature.icon className="w-12 h-12 mx-auto text-amber-500 group-hover:scale-110 transition-transform" />
-                <h3 className="font-semibold text-slate-900">{feature.title}</h3>
-                <p className="text-sm text-slate-600">{feature.desc}</p>
-              </div>
-            ))}
+            {content.homepage.features.map((feature, index) => {
+              const icons = [Truck, Shield, Award, TrendingUp];
+              const Icon = icons[index % icons.length];
+              return (
+                <div key={index} className="text-center space-y-3 group">
+                  <Icon className="w-12 h-12 mx-auto text-amber-500 group-hover:scale-110 transition-transform" />
+                  <h3 className="font-semibold text-slate-900">{feature.title}</h3>
+                  <p className="text-sm text-slate-600">{feature.description}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -138,13 +132,13 @@ export function HomePage({ onNavigate }: HomePageProps) {
       <section className="py-20 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-slate-900 mb-4">Shop By Category</h2>
+            <h2 className="text-4xl font-bold text-slate-900 mb-4">{content.homepage.categoriesTitle}</h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
-              Explore our wide range of gift categories designed to make every occasion memorable
+              {content.homepage.categoriesDescription}
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {categories.map((category, index) => (
+            {content.categories.map((category, index) => (
               <button
                 key={index}
                 onClick={() => onNavigate('products')}
@@ -158,7 +152,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                   <h3 className="text-xl font-bold mb-1">{category.name}</h3>
-                  <p className="text-sm text-gray-300">{category.count}+ Products</p>
+                  <p className="text-sm text-gray-300">{category.productCount}+ Products</p>
                 </div>
               </button>
             ))}
@@ -170,8 +164,8 @@ export function HomePage({ onNavigate }: HomePageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-12">
             <div>
-              <h2 className="text-4xl font-bold text-slate-900 mb-2">Featured Products</h2>
-              <p className="text-slate-600">Handpicked selections just for you</p>
+              <h2 className="text-4xl font-bold text-slate-900 mb-2">{content.homepage.featuredTitle}</h2>
+              <p className="text-slate-600">{content.homepage.featuredDescription}</p>
             </div>
             <button
               onClick={() => onNavigate('products')}
@@ -227,8 +221,8 @@ export function HomePage({ onNavigate }: HomePageProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center mb-12">
             <div>
-              <h2 className="text-4xl font-bold text-slate-900 mb-2">Best Sellers</h2>
-              <p className="text-slate-600">Most loved by our customers</p>
+              <h2 className="text-4xl font-bold text-slate-900 mb-2">{content.homepage.bestSellersTitle}</h2>
+              <p className="text-slate-600">{content.homepage.bestSellersDescription}</p>
             </div>
           </div>
           {loading ? (
